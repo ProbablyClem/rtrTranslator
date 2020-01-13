@@ -1,4 +1,4 @@
-A tool to create translation files for the rtr librairy ("Add Link");
+A tool to create translation files for the rtr librairy ("https://github.com/ProbablyClem/RustTraduction");
 
 Instruction :
 
