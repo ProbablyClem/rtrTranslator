@@ -148,9 +148,11 @@ fn main() {
             //export the file
             println!("{}", &path);
             path.truncate(path.len() - 7);
+            path.push_str("lang/");
             path.push_str(&lang);
             path.push_str(".txt");
             println!("{}", &path);
+            fs::create_dir_all("./lang");
             File::create(&path).expect("couldn't create file ");
             let f = File::create(path).expect("Couldn't create file");
             let mut f = LineWriter::new(f);
