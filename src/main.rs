@@ -8,6 +8,10 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::io::LineWriter;
+use std::fs::{self};
+use std::path::Path;
+extern crate walkdir;
+use walkdir::{WalkDir, DirEntry};
 
 fn main() {
     loop {
@@ -21,14 +25,11 @@ fn main() {
                 args.reverse();
                 //lowercase the first argument (supposed to bey the key word)
                 args[0].to_lowercase();
-                for i in &args {
-                println!(" {}", i);
-                }   
+
                 //println!("{}", &args[0]);
                 if &args[0] == &"view" {
                     //if no arguments are specified
                     if input.len() == 4 {
-                        println!("view langages");
                                     let mut cpt = 0;
                                     let path = env::current_dir().unwrap();
                                     let new_path = format!("{}/*.txt", path.to_str().unwrap());
@@ -47,7 +48,7 @@ fn main() {
                             let mut cpt = 0;
                             let mut path = input[5..].to_string();
                             path.truncate(path.len() -1);
-                            path.push_str("*.txt");
+                            path.push_str("**/*.txt");
                             println!("{}", path);
                             for entry in glob(&path.to_string()).unwrap() {
                                 println!("{}", entry.unwrap().display());
@@ -67,7 +68,11 @@ fn main() {
                     //create origin file from specified dir
                     else {
                         if &args.len() == &3 {
-
+                            if args[1] == "." {
+                                CreateOrigin(env::current_dir().unwrap().to_str().unwrap().to_string(), args[2].to_string());
+                            }
+                            else {CreateOrigin(args[1].to_string(), args[2].to_string());}
+                            
                         }
                         else {                        
                             CreateOrigin(args[1].to_string(), "origin".to_string());
@@ -90,8 +95,10 @@ fn main() {
         let mut origin : Vec<String> = Vec::new();
         //stores the content of every.rs files in the directory
         let mut fileBuf = String::new();
-        path.push_str("/*.rs");
+        path.push_str("/**/*.rs");
         println!("Creating from path {}", path);
+
+
         //read every .rs file and happend it in the fileBuf variable
         for entry in glob(&path).unwrap() {
             let f = File::open(&entry.unwrap()).unwrap();
@@ -104,6 +111,12 @@ fn main() {
         let mut lineBuf = String::new();
         let mut buff : Vec<char> = vec![' '; 6];
         let mut inside : bool = false;
+
+
+        // for entry in fs::read_dir(".").unwrap() {
+        //     let dir = entry.unwrap();
+        //     println!("{:?}", dir.path());
+        // }
 
         for c in fileBuf.chars() {            
             buff[0] = buff[1];
@@ -139,10 +152,10 @@ fn main() {
             println!("{}", i);
         }
             //export the file
-            path.truncate(path.len() - 4);
+            path.truncate(path.len() - 9);
             path.push_str(&lang);
             path.push_str(".txt");
-            File::create(&path);
+            File::create(&path).expect("couldn't create file ");
             let f = File::create(path).expect("Couldn't create file");
             let mut f = LineWriter::new(f);
             &origin.sort_unstable();
