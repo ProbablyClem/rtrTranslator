@@ -112,12 +112,6 @@ fn main() {
         let mut buff : Vec<char> = vec![' '; 6];
         let mut inside : bool = false;
 
-
-        // for entry in fs::read_dir(".").unwrap() {
-        //     let dir = entry.unwrap();
-        //     println!("{:?}", dir.path());
-        // }
-
         for c in fileBuf.chars() {            
             buff[0] = buff[1];
             buff[1] = buff[2];
@@ -142,7 +136,7 @@ fn main() {
                 lineBuf.clear();
             }
 
-            if inside == true {
+            if inside == true{
                 lineBuf.push(c);
             }   
         }
@@ -152,18 +146,21 @@ fn main() {
             println!("{}", i);
         }
             //export the file
-            path.truncate(path.len() - 9);
+            println!("{}", &path);
+            path.truncate(path.len() - 7);
             path.push_str(&lang);
             path.push_str(".txt");
+            println!("{}", &path);
             File::create(&path).expect("couldn't create file ");
             let f = File::create(path).expect("Couldn't create file");
             let mut f = LineWriter::new(f);
             &origin.sort_unstable();
             &origin.dedup();
-            for i in 0..origin.len(){
+            for i in 1..origin.len() -1 {
                 origin[i].push_str("\n");
                 f.write_all(origin[i].as_bytes()).expect("Couldn't write");
-        }
+            }
+            f.write_all(origin[origin.len() -1].as_bytes()).expect("Couldn't write");
     }
 
     
