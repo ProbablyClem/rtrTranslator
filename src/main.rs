@@ -63,19 +63,35 @@ fn main() {
                 //create origin file from current dir
                 else if &args[0] == &"create" {
                     if input.len() == 6 {
-                        CreateOrigin(env::current_dir().unwrap().to_str().unwrap().to_string(), "origin".to_string());
+                        let mut origin = CreateOrigin(env::current_dir().unwrap().to_str().unwrap().to_string());
+                        exportFile(env::current_dir().unwrap().to_str().unwrap().to_string(), "origin".to_string(), origin).unwrap();
                     }
                     //create origin file from specified dir
                     else {
                         if &args.len() == &3 {
                             if args[1] == "." {
-                                CreateOrigin(env::current_dir().unwrap().to_str().unwrap().to_string(), args[2].to_string());
+                                if args[2] == "origin" {
+                                    let mut origin = CreateOrigin(env::current_dir().unwrap().to_str().unwrap().to_string());
+                                    exportFile(env::current_dir().unwrap().to_str().unwrap().to_string(), "origin".to_string(), origin).unwrap();
+                                }
+                                else {
+                                let newFile = CreateNew(LoadOrigin(env::current_dir().unwrap().to_str().unwrap().to_string()).unwrap());
+                                let origin = LoadOrigin(args[1].to_string()).unwrap();
+                                exportFile(args[1].to_string(), args[2].to_string(), newFile).unwrap();
+                                }
+                                
                             }
-                            else {CreateOrigin(args[1].to_string(), args[2].to_string());}
+                            else {
+                                let origin = LoadOrigin(args[1].to_string()).unwrap();
+                                let newFile = CreateNew(origin);
+                                exportFile(args[1].to_string(), args[2].to_string(), newFile).unwrap();
+                            }
                             
                         }
                         else {                        
-                            CreateOrigin(args[1].to_string(), "origin".to_string());
+                            let mut origin = CreateOrigin(args[1].to_string());
+                            print!("here");
+                            exportFile(args[1].to_string(), "origin".to_string(), origin).unwrap();
                         }
                     }
                 } 
@@ -90,7 +106,7 @@ fn main() {
         }
     }
 
-    fn CreateOrigin(mut path : String, lang : String){
+    fn CreateOrigin(mut path : String) -> Vec<String>{
         //the origin file vect
         let mut origin : Vec<String> = Vec::new();
         //stores the content of every.rs files in the directory
@@ -106,8 +122,7 @@ fn main() {
             f.read_to_string(&mut fileBuf).expect("failed to read file");
         }
 
-        let mut cpt = 0;
-        let mut c = fileBuf.chars();
+        let c = fileBuf.chars();
         let mut lineBuf = String::new();
         let mut buff : Vec<char> = vec![' '; 6];
         let mut inside : bool = false;
@@ -119,19 +134,13 @@ fn main() {
             buff[3] = buff[4];
             buff[4] = buff[5];
             buff[5] = c;
-            // for i in &buff {
-            //     println!("{}" ,i);
-            // }
-            // println!("------------");
             
             
             if buff[0] == 'r' && buff[1] == 't' && buff[2] == 'r' && buff[3] == '(' && buff[4] == '\"'{
                 inside = true;
-               // println!("{}", inside);
             }
             else if c == '\"'{
                 inside = false;
-                //println!("{}", &lineBuf);
                 origin.push(lineBuf.clone());
                 lineBuf.clear();
             }
@@ -142,13 +151,58 @@ fn main() {
         }
 
         println!("{}", origin.len());
-        for i in &origin {
+        for i in 0..origin.len() {
             println!("{}", i);
+            origin[i].push_str("\n");
         }
-            //export the file
+            return origin;
+    }
+
+    fn CreateNew(origin : Vec<String>) -> Vec<String>{
+        let mut newVec : Vec<String> = Vec::new();
+        let mut lineBuf = String::new();
+        for i in 0..origin.len(){
+            println!("translation for :");
+            println!("{}", origin[i]);
+            io::stdin().read_line(&mut lineBuf);
+            newVec.push(lineBuf.clone());
+            lineBuf.clear();
+        }
+        return newVec;
+    }
+
+    fn LoadOrigin(mut path : String) -> Result<Vec<String>, io::Error> {
+        println!("{}", &path);
+            path.push_str("/lang/origin.txt");
             println!("{}", &path);
-            path.truncate(path.len() - 7);
-            path.push_str("lang/");
+        let f = File::open(path)?;
+        let mut f = BufReader::new(f);
+        let mut v = Vec::new();
+
+        for line in f.lines() {
+            v.push(line?);
+        }
+        return Ok(v);
+    }
+    
+    fn exportFile(mut path: String, lang : String, mut vec : Vec<String>) -> io::Result<()> {
+            // fs::create_dir_all("./lang")?;
+            // path.push_str(lang.as_str());
+            // File::create(&path)?;
+            // let f = File::create(path)?;
+            // let mut f = LineWriter::new(f);
+            // vec.sort_unstable();
+            // &vec.dedup();
+            // for i in 1..vec.len() -1 {
+            //     vec[i].push_str("\n");
+            //     f.write_all(vec[i].as_bytes())?;
+            // }
+            // f.write_all(vec[vec.len() -1].as_bytes())?;
+            // Ok(())
+
+            println!("{}", &path);
+            //path.truncate(path.len() - 7);
+            path.push_str("/lang/");
             path.push_str(&lang);
             path.push_str(".txt");
             println!("{}", &path);
@@ -156,16 +210,16 @@ fn main() {
             File::create(&path).expect("couldn't create file ");
             let f = File::create(path).expect("Couldn't create file");
             let mut f = LineWriter::new(f);
-            &origin.sort_unstable();
-            &origin.dedup();
-            for i in 1..origin.len() -1 {
-                origin[i].push_str("\n");
-                f.write_all(origin[i].as_bytes()).expect("Couldn't write");
+            &vec.sort_unstable();
+            &vec.dedup();
+            for i in 0..vec.len() -1 {
+               // vec[i].push_str("\n");
+                println!("{}", vec[i]);
+                f.write_all(vec[i].as_bytes()).expect("Couldn't write");
             }
-            f.write_all(origin[origin.len() -1].as_bytes()).expect("Couldn't write");
+            f.write_all(vec[vec.len() -1].as_bytes()).expect("Couldn't write");
+            return Ok(());
     }
-
-    
 
 }
 
