@@ -181,7 +181,7 @@ fn main() {
                 && buff[4] == '\"'
             {
                 inside = true;
-            } else if c == '\"' {
+            } else if c == '\"' && buff[4] != '\\' {
                 inside = false;
                 lineBuf.push('\n');
                 origin.push(lineBuf.clone());
@@ -189,7 +189,8 @@ fn main() {
                 lineBuf.clear();
             }
 
-            if inside == true {
+            
+            if inside == true && c != '\\' || (c == '\\' && buff[4] == '\\') {
                 lineBuf.push(c);
             }
         }
