@@ -1,8 +1,8 @@
-A tool to create translation files for the rtr librairy ("https://github.com/ProbablyClem/RustTraduction")
+A tool to create translation files for the rtr librairy (https://github.com/ProbablyClem/RustTraduction)
 
 Instruction :
 
-Launch the app and then enter commands
+Launch the app and then enter commands.
 Note that only absolut paths works right now
 Commands : 
 - view [path]
