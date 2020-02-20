@@ -8,7 +8,7 @@ Commands :
 - view [path]
     Will show you every txt files in the folder in argument. (Current folder by default)
 - create [path] [filename]
-    Will create a new file with every .rs files in the folder. The name will be called [filename].txt (default name "origin") (Current folder by default)
+    Will create a new file with every .rs files in the folder. The file will be called [filename].txt (default name "origin") (Current folder by default)
     Use "." to select the current directory
     the file will be create in the ./lang directory
 - quit 
@@ -30,7 +30,7 @@ TODO (as ordered by priority) :
 
 - Use of relative paths
 
-- acces precedent command with the up arrow (as in the terminal)
+- access precedent command with the up arrow (as in the terminal)
 
 - autocompletion
 
