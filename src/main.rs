@@ -31,10 +31,17 @@ fn main() {
                     //if no arguments are specified
                     if input.len() == 4 {
                         let mut cpt = 0;
-                        let path = env::current_dir().unwrap();
-                        let new_path = format!("{}/*.txt", path.to_str().unwrap());
+                        let path = env::current_dir().expect("coulnd't get the current dir");
+                        let new_path = format!("{}/lang/*.txt", path.to_str().unwrap());
                         //println!("{}", new_path);
-                        for entry in glob(&new_path).unwrap() {
+                        for entry in match glob(&new_path){
+                            Ok(path) => path,
+                            Err(e) => {
+                                println!("couln't open dir {}, Error : {}", &new_path, e);
+                                main();
+                                Err(e).unwrap()
+                            }
+                        } {
                             println!("{}", entry.unwrap().display());
                             cpt = cpt + 1;
                         }
