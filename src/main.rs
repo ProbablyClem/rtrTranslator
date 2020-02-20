@@ -1,23 +1,23 @@
+#![allow(unused_must_use)]
+#![allow(non_snake_case)]
+
 extern crate glob;
 
 use glob::glob;
 use std::env;
-use std::env::args;
 use std::fs::File;
 use std::fs::{self};
 use std::io;
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::io::LineWriter;
-use std::path::Path;
 extern crate walkdir;
-use walkdir::{DirEntry, WalkDir};
 
 fn main() {
     loop {
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
-            Ok(n) => {
+            Ok(_) => {
                 //splits the input into pieces backward
                 input = input.trim_matches('\n').to_string();
                 let mut args: Vec<&str> = input.rsplit(' ').collect();
@@ -33,7 +33,7 @@ fn main() {
                         let mut cpt = 0;
                         let path = env::current_dir().unwrap();
                         let new_path = format!("{}/*.txt", path.to_str().unwrap());
-                        println!("{}", new_path);
+                        //println!("{}", new_path);
                         for entry in glob(&new_path).unwrap() {
                             println!("{}", entry.unwrap().display());
                             cpt = cpt + 1;
@@ -49,7 +49,7 @@ fn main() {
                             let mut path = input[5..].to_string();
                             path.truncate(path.len() - 1);
                             path.push_str("**/*.txt");
-                            println!("{}", path);
+                            //println!("{}", path);
                             for entry in glob(&path.to_string()).unwrap() {
                                 println!("{}", entry.unwrap().display());
                                 cpt = cpt + 1;
@@ -63,7 +63,7 @@ fn main() {
                 //create origin file from current dir
                 else if &args[0] == &"create" {
                     if input.len() == 6 {
-                        let mut origin =
+                        let origin =
                             CreateOrigin(env::current_dir().unwrap().to_str().unwrap().to_string());
                         exportFile(
                             env::current_dir().unwrap().to_str().unwrap().to_string(),
@@ -77,7 +77,7 @@ fn main() {
                         if &args.len() == &3 {
                             if args[1] == "." {
                                 if args[2] == "origin" {
-                                    let mut origin = CreateOrigin(
+                                    let origin = CreateOrigin(
                                         env::current_dir().unwrap().to_str().unwrap().to_string(),
                                     );
                                     exportFile(
@@ -97,7 +97,6 @@ fn main() {
                                         )
                                         .unwrap(),
                                     );
-                                    let origin = LoadOrigin(args[1].to_string()).unwrap();
                                     exportFile(args[1].to_string(), args[2].to_string(), newFile)
                                         .unwrap();
                                 }
@@ -108,8 +107,7 @@ fn main() {
                                     .unwrap();
                             }
                         } else {
-                            let mut origin = CreateOrigin(args[1].to_string());
-                            print!("here");
+                            let origin = CreateOrigin(args[1].to_string());
                             exportFile(args[1].to_string(), "origin".to_string(), origin).unwrap();
                         }
                     }
@@ -132,13 +130,30 @@ fn main() {
         println!("Creating from path {}", path);
 
         //read every .rs file and happend it in the fileBuf variable
+        //for entry in glob(&path).unwrap_or_else(inputError) {
+        // for entry in glob(&path).unwrap() {
+        //     let f = File::open(&entry.unwrap()).unwrap();
+        //     let mut f = BufReader::new(f);
+        //     f.read_to_string(&mut fileBuf).expect("failed to read file");
+        // }
+
         for entry in glob(&path).unwrap() {
-            let f = File::open(&entry.unwrap()).unwrap();
-            let mut f = BufReader::new(f);
+            // let mut f = File::open(&entry.unwrap());
+            //let mut f : std::io::Result<fs::File> = Err(std::io::Error::new(std::io::ErrorKind::NotFound, "test"));
+            
+            let f = match File::open(&entry.unwrap()) {
+                Ok(file) => Ok(file),
+                Err(e) => {
+                    println!("couldn't open file, Error {}", e);
+                    main(); 
+                    Err(e)
+                },
+            };
+
+            let mut f = BufReader::new(f.unwrap());
             f.read_to_string(&mut fileBuf).expect("failed to read file");
         }
 
-        let c = fileBuf.chars();
         let mut lineBuf = String::new();
         let mut buff: Vec<char> = vec![' '; 6];
         let mut inside: bool = false;
@@ -171,19 +186,7 @@ fn main() {
                 lineBuf.push(c);
             }
         }
-
-        
-        // println!("{}", origin.len());
-        //  for i in 0..origin.len() {
-        //      if &origin[i] == &"\n".to_string() {
-        //          &origin.remove(i);
-        //      }
-        //     println!("{}", i);
-        //     origin[i].push_str("\n");
-        // }
-
         return origin;
-
     }
 
     fn CreateNew(origin: Vec<String>) -> Vec<String> {
@@ -203,8 +206,15 @@ fn main() {
         println!("{}", &path);
         path.push_str("/lang/origin.txt");
         println!("{}", &path);
-        let f = File::open(path)?;
-        let mut f = BufReader::new(f);
+        let f = match File::open(path) {
+            Ok(file) => { Ok(file) },
+            Err(e) => {
+                println!("Couldn't load origin at specified path. Error : {}", e);
+                main();
+                Err(e)
+            }
+        };
+        let f = BufReader::new(f.unwrap());
         let mut v = Vec::new();
 
         for line in f.lines() {
@@ -214,44 +224,65 @@ fn main() {
     }
 
     fn exportFile(mut path: String, lang: String, mut vec: Vec<String>) -> io::Result<()> {
-        // fs::create_dir_all("./lang")?;
-        // path.push_str(lang.as_str());
-        // File::create(&path)?;
-        // let f = File::create(path)?;
-        // let mut f = LineWriter::new(f);
-        // vec.sort_unstable();
-        // &vec.dedup();
-        // for i in 1..vec.len() -1 {
-        //     vec[i].push_str("\n");
-        //     f.write_all(vec[i].as_bytes())?;
-        // }
-        // f.write_all(vec[vec.len() -1].as_bytes())?;
-        // Ok(())
 
-        println!("{}", &path);
-        //path.truncate(path.len() - 7);
+        //println!("{}", &path);
         path.push_str("/lang/");
         path.push_str(&lang);
         path.push_str(".txt");
-        println!("{}", &path);
-        fs::create_dir_all("./lang");
-        File::create(&path).expect("couldn't create file ");
-        let f = File::create(path).expect("Couldn't create file");
-        let mut f = LineWriter::new(f);
+        //println!("{}", &path);
+        match fs::create_dir_all("./lang"){
+            Ok(()) => Ok(()),
+            Err(e) => {
+                println!("Couldn't create dir ./lang. Error : {}", e);
+                main();
+                Err(e)
+            }
+        };
+
+        // match File::create(&path){
+        //     Ok(file) => Ok(file),
+        //     Err(e) => {
+        //         println!("Couldn't create file at path {} Error : {}", &path, e);
+        //         main();
+        //         Err(e)
+        //     }
+        // };
+
+        let f = match File::create(&path){
+            Ok(file) => Ok(file),
+            Err(e) => {
+                println!("Couldn't create file at path {} Error : {}", &path, e);
+                main();
+                Err(e)
+            }
+        };
+        let mut f = LineWriter::new(f.unwrap());
         &vec.sort_unstable();
         &vec.dedup();
         for i in 0..vec.len() - 1 {
-            // vec[i].push_str("\n");
             if vec[i] != "\n" {
-                println!("{}", vec[i]);
-            f.write_all(vec[i].as_bytes()).expect("Couldn't write");
-            }
-            
+ //               println!("{}", vec[i]);
+            match f.write_all(vec[i].as_bytes()){
+                Ok(()) => Ok(()),
+                Err(e) => {
+                    println!("couldn't write to file {}, error : {}", &path, e);
+                    main();
+                    Err(e)
+                }
+            };
+            }         
         }
         let mut lastElement = vec[vec.len() - 1].clone();
         lastElement.pop();
-        f.write_all(lastElement.as_bytes())
-            .expect("Couldn't write");
+        match f.write_all(lastElement.as_bytes()) {
+            Ok(()) => Ok(()),
+                Err(e) => {
+                    println!("couldn't write to file {}, error : {}", &path, e);
+                    main();
+                    Err(e)
+                }
+        };
+        println!("file created!");
         return Ok(());
     }
 }
