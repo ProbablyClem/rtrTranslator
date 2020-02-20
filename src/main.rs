@@ -54,10 +54,17 @@ fn main() {
                         if input.len() > 5 {
                             let mut cpt = 0;
                             let mut path = input[5..].to_string();
-                            path.truncate(path.len() - 1);
-                            path.push_str("**/*.txt");
-                            //println!("{}", path);
-                            for entry in glob(&path.to_string()).unwrap() {
+                            path.truncate(path.len());
+                            path.push_str("/**/*.txt");
+                            println!("{}", path);
+                            for entry in match glob(&path.to_string()){
+                                Ok(path) => path,
+                                Err(e) => {
+                                    println!("couldn't access the {} directory. Error : {} ", path, e);
+                                    main();
+                                    Err(e).unwrap()
+                                } 
+                            } {
                                 println!("{}", entry.unwrap().display());
                                 cpt = cpt + 1;
                             }
