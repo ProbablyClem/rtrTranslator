@@ -190,7 +190,8 @@ fn main() {
             }
 
             
-            if inside == true && c != '\\' || (c == '\\' && buff[4] == '\\') {
+            if inside == true && (c != '\\' || (c == '\\' && buff[4] == '\\'))  {
+                println!("{}", c);
                 lineBuf.push(c);
             }
         }

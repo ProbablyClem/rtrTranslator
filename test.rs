@@ -1,4 +1,5 @@
 -)yBT)EYRTRRBN Trtrazdazdqdqsdqd
-rtr(azeara"ert)azeazrarazrazeazreraarazrzr"
-rtr("hey clement")azeazrazereararaezzetzetzetzetzetzt
+rtr(azearaert)azeazrarazrazeazreraarazrzr"
+rtr("hey cl\\ement")azeazrazereararaezzetzetzetzetzetzt
 rtr("hirenr\"eyhrrn y")
+rtr(foo)
