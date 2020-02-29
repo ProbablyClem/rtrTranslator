@@ -1,4 +1,5 @@
-# A tool to create translation files for the rtr librairy (https://github.com/ProbablyClem/RustTraduction)
+# A tool to create translation files for the rtr librairy
+ (https://github.com/ProbablyClem/RustTraduction)
 
 ## Instruction :
 
