@@ -3,15 +3,15 @@
 ## Instruction :
 
 Launch the app and then enter commands.
-Note that only absolut paths works right now
+
 ### Commands : 
-- view [path]
+- view [path]<br/>
     Will show you every txt files in the folder in argument. (./lang/ by default)
-- create [path] [filename]
+- create [path] [filename]<br/>
     Will create a new file with every .rs files in the folder. The file will be called [filename].txt (default name "origin") (Current folder by default)
     Use "." to select the current directory
     the file will be create in the ./lang directory
-- quit 
+- quit<br/> 
     Exit the app
 
 ### How to use it : 
@@ -25,7 +25,7 @@ Note that only absolut paths works right now
 ## Installation
 Install with cargo : 
 ```
-$cargo install rtr_translator
+cargo install rtr_translator
 ```
 
 ## TODO (as ordered by priority) : 

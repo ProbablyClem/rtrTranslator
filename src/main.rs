@@ -13,6 +13,7 @@ use std::io::LineWriter;
 extern crate walkdir;
 
 fn main() {
+    println!("Waiting for instruction:");
     loop {
         let mut input = String::new();
         match io::stdin().read_line(&mut input) {
