@@ -23,11 +23,10 @@ Note that only absolut paths works right now
 - create new langage from the origin file with the "$create" command
 
 ##Installation
-
-###From source
-clone the repos
+Install with cargo : 
 ```
-$git clone 
+$cargo install rtr_translator
+```
 
 ##TODO (as ordered by priority) : 
 
