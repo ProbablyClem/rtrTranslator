@@ -1,3 +1,5 @@
 /target
-**/*.rs.bk
+**/*.rs
 lang
+*.rs
+testdir

@@ -1,10 +1,10 @@
-A tool to create translation files for the rtr librairy (https://github.com/ProbablyClem/RustTraduction)
+#A tool to create translation files for the rtr librairy (https://github.com/ProbablyClem/RustTraduction)
 
-Instruction :
+##Instruction :
 
 Launch the app and then enter commands.
 Note that only absolut paths works right now
-Commands : 
+###Commands : 
 - view [path]
     Will show you every txt files in the folder in argument. (./lang/ by default)
 - create [path] [filename]
@@ -14,7 +14,7 @@ Commands :
 - quit 
     Exit the app
 
-How to use it : 
+###How to use it : 
 
 - go to the source directory
 
@@ -22,13 +22,14 @@ How to use it :
 
 - create new langage from the origin file with the "$create" command
 
-TODO (as ordered by priority) : 
+##Installation
 
-- Error handling when the origin file does not exist
+###From source
+clone the repos
+```
+$git clone 
 
-- Error handling if the specified path does not exist
-
-- Use of relative paths
+##TODO (as ordered by priority) : 
 
 - access precedent command with the up arrow (as in the terminal)
 
