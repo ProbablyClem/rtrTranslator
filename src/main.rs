@@ -160,7 +160,7 @@ fn main() {
         }
 
         let mut line_buf = String::new();
-        let mut buff: Vec<char> = vec![' '; 6];
+        let mut buff: Vec<char> = vec![' '; 7];
         let mut inside: bool = false;
         let mut lines: usize = 0;
 
@@ -170,16 +170,24 @@ fn main() {
             buff[2] = buff[3];
             buff[3] = buff[4];
             buff[4] = buff[5];
-            buff[5] = c;
+            buff[5] = buff[6];
+            buff[6] = c;
 
-            if buff[0] == 'r'
+            if  (buff[1] == 'r'
+                && buff[2] == 't'
+                && buff[3] == 'r'
+                && buff[4] == '('
+                && buff[5] == '\"')
+                ||
+                (buff[0] == 'r'
                 && buff[1] == 't'
                 && buff[2] == 'r'
-                && buff[3] == '('
-                && buff[4] == '\"'
+                && buff[3] == '!'
+                && buff[4] == '('
+                && buff[5] == '\"')
             {
                 inside = true;
-            } else if c == '\"' && buff[4] != '\\' {
+            } else if c == '\"' && buff[5] != '\\' {
                 inside = false;
                 line_buf.push('\n');
                 origin.push(line_buf.clone());
@@ -187,7 +195,7 @@ fn main() {
                 line_buf.clear();
             }
 
-            if inside && (c != '\\' || buff[4] == '\\') {
+            if inside && (c != '\\' || buff[5] == '\\') {
                 line_buf.push(c);
             }
         }
