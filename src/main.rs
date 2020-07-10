@@ -11,6 +11,8 @@ use std::io::prelude::*;
 use std::io::BufReader;
 use std::io::LineWriter;
 extern crate walkdir;
+extern crate string_parser;
+use string_parser::string_parser;
 
 fn main() {
     println!("Waiting for instruction:");
@@ -129,13 +131,27 @@ fn main() {
     fn create_origin(mut path: String) -> Vec<String> {
         //the origin file vect
         let mut origin: Vec<String> = Vec::new();
-        //stores the content of every.rs files in the directory
-        let mut file_buf = String::new();
+        let mut lines: usize = 0;
 
         path.push_str("/**/*.rs");
         println!("Creating from path {}", path);
 
         //read every .rs file and appends it in the file_buf variable
+        let mut callback = |s : String| {
+            let mut line = s.clone();
+            line.push('\n');
+            origin.push(line);
+            lines +=1;
+        };
+
+        fn end_filter(c : Vec<char>) -> bool {
+            if c.last().unwrap() == &'\"' && c.get(c.len() -1).unwrap() != &'\\'{
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
 
         for entry in match glob(&path) {
             Ok(entry) => entry,
@@ -145,59 +161,7 @@ fn main() {
                 Err(e).unwrap()
             }
         } {
-            let f = match File::open(&entry.unwrap()) {
-                Ok(file) => file,
-                Err(e) => {
-                    println!("couldn't open file, Error {}", e);
-                    main();
-                    Err(e).unwrap()
-                }
-            };
-
-            let mut f = BufReader::new(f);
-            f.read_to_string(&mut file_buf)
-                .expect("failed to read file");
-        }
-
-        let mut line_buf = String::new();
-        let mut buff: Vec<char> = vec![' '; 7];
-        let mut inside: bool = false;
-        let mut lines: usize = 0;
-
-        for c in file_buf.chars() {
-            buff[0] = buff[1];
-            buff[1] = buff[2];
-            buff[2] = buff[3];
-            buff[3] = buff[4];
-            buff[4] = buff[5];
-            buff[5] = buff[6];
-            buff[6] = c;
-
-            if  (buff[1] == 'r'
-                && buff[2] == 't'
-                && buff[3] == 'r'
-                && buff[4] == '('
-                && buff[5] == '\"')
-                ||
-                (buff[0] == 'r'
-                && buff[1] == 't'
-                && buff[2] == 'r'
-                && buff[3] == '!'
-                && buff[4] == '('
-                && buff[5] == '\"')
-            {
-                inside = true;
-            } else if c == '\"' && buff[5] != '\\' {
-                inside = false;
-                line_buf.push('\n');
-                origin.push(line_buf.clone());
-                lines += 1;
-                line_buf.clear();
-            }
-
-            if inside && (c != '\\' || buff[5] == '\\') {
-                line_buf.push(c);
-            }
+            string_parser(entry.unwrap().to_str().unwrap(), "rtr(\"", end_filter, &mut callback).expect("failed to open file");
         }
 
         //check if there is at least one line in the origin vector
